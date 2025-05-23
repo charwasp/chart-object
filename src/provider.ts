@@ -1,4 +1,4 @@
-import { decoders } from 'audio-decode';
+import { OggVorbisDecoder } from '@wasm-audio-decoders/ogg-vorbis';
 import { PNG } from 'pngjs';
 
 import { Chart } from './chart.js';
@@ -72,34 +72,59 @@ abstract class Provider {
 	abstract encode(output: DataView, offset: number): [number, EmbedRequest[]];
 }
 
-abstract class MusicProvider extends Provider {
+abstract class AudioProvider extends Provider {
 	/**
 	 * Returns the audio buffer of the music.
 	 * 
 	 * If `context` is provided, its `createBuffer` method will be used to create the audio buffer.
 	 * 
 	 * If `context` is not provided, the constructor of `AudioBuffer` will be used.
-	 * In cases where `AudioBuffer` does not exist (e.g. usually outside of a browser),
-	 * a shim implementation by [audio-buffer](https://www.npmjs.com/package/audio-buffer) will be used,
-	 * which may cause some [issues](https://github.com/audiojs/audio-decode/pull/35#issuecomment-1655907036).
-	 * If that happens, specify the `context` parameter.
+	 * When `AudioBuffer` does not exist (usually happens when outside of a browser),
+	 * you must provide the `context` parameter.
 	 * 
 	 * @param context The audio context to use for creating the audio buffer.
 	 * @returns The audio buffer containing the decoded audio data.
 	 */
 	abstract audioBuffer(context?: BaseAudioContext): Promise<AudioBuffer>;
 
+	static decoder: OggVorbisDecoder;
+
+	/**
+	 * Uses [@wasm-audio-decoders/ogg-vorbis](https://www.npmjs.com/package/@wasm-audio-decoders/ogg-vorbis)
+	 * to decode audio data in Ogg Vorbis format.
+	 * 
+	 * See {@link audioBuffer} for how the parameter `context` is used.
+	 * 
+	 * @param arrayBuffer The array buffer containing the audio data in Ogg Vorbis format.
+	 * @param context The audio context to use for creating the audio buffer.
+	 * @returns The decoded audio buffer.
+	 */
+	static async decodeAudio(arrayBuffer: ArrayBuffer, context?: BaseAudioContext): Promise<AudioBuffer> {
+		if (!AudioProvider.decoder) {
+			AudioProvider.decoder = new OggVorbisDecoder();
+			await AudioProvider.decoder.ready;
+		} else {
+			await AudioProvider.decoder.reset();
+		}
+		const decoder = AudioProvider.decoder;
+		const { channelData, sampleRate } = await decoder.decodeFile(new Uint8Array(arrayBuffer));
+		const numberOfChannels = channelData.length;
+		const length = channelData[0].length;
+		const result = context?.createBuffer(numberOfChannels, length, sampleRate) ?? new AudioBuffer({ numberOfChannels, length, sampleRate });
+		for (let i = 0; i < numberOfChannels; i++) {
+			result.copyToChannel(channelData[i], i);
+		}
+		return result;
+	}
+}
+
+abstract class MusicProvider extends AudioProvider {
 	static decode(music: Music, input: DataView, offset: number): MusicProvider {
 		return new MusicFromFileProvider(FileProvider.decode(input, offset));
 	}
 }
 
-abstract class PreviewProvider extends Provider {
-	/**
-	 * {@inheritDoc MusicProvider.audioBuffer}
-	 */
-	abstract audioBuffer(context?: BaseAudioContext): Promise<AudioBuffer>;
-
+abstract class PreviewProvider extends AudioProvider {
 	static decode(music: Music, input: DataView, offset: number): MusicProvider {
 		switch (input.getInt8(offset)) {
 			case 0:
@@ -219,16 +244,7 @@ class MusicFromFileProvider extends MusicProvider {
 	}
 
 	async audioBuffer(context?: BaseAudioContext): Promise<AudioBuffer> {
-		const buffer = await this.fileProvider.arrayBuffer();
-		const decoded = await decoders.oga(new Uint8Array(buffer));
-		if (!context) {
-			return decoded;
-		}
-		const result = context.createBuffer(decoded.numberOfChannels, decoded.length, decoded.sampleRate);
-		for (let i = 0; i < decoded.numberOfChannels; i++) {
-			result.copyToChannel(decoded.getChannelData(i), i);
-		}
-		return result;
+		return await AudioProvider.decodeAudio(await this.fileProvider.arrayBuffer(), context);
 	}
 
 	encode(output: DataView, offset: number): [number, EmbedRequest[]] {
@@ -250,16 +266,7 @@ class PreviewFromFileProvider extends PreviewProvider {
 	}
 
 	async audioBuffer(context?: BaseAudioContext): Promise<AudioBuffer> {
-		const buffer = await this.fileProvider.arrayBuffer();
-		const decoded = await decoders.oga(new Uint8Array(buffer));
-		if (!context) {
-			return decoded;
-		}
-		const result = context.createBuffer(decoded.numberOfChannels, decoded.length, decoded.sampleRate);
-		for (let i = 0; i < decoded.numberOfChannels; i++) {
-			result.copyToChannel(decoded.getChannelData(i), i);
-		}
-		return result;
+		return await AudioProvider.decodeAudio(await this.fileProvider.arrayBuffer(), context);
 	}
 
 	encode(output: DataView, offset: number): [number, EmbedRequest[]] {

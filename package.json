@@ -48,8 +48,12 @@
 	},
 	"peerDependencies": {
 		"@petamoriken/float16": "^3.9.2",
-		"audio-decode": "^2.2.2",
 		"fraction.js": "^5.2.2",
-		"pngjs": "^7.0.0"
+		"pngjs": "^7.0.0",
+		"@wasm-audio-decoders/ogg-vorbis": "^0.1.18",
+		"buffer": "^6.0.3"
+	},
+	"peerDependenciesComments": {
+		"buffer": "pngjs uses Buffer, which is not present in the browser. This shim is needed."
 	}
 }

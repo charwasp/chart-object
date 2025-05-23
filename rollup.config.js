@@ -36,7 +36,7 @@ const iife = {
 			browser: true,
 			preferBuiltins: false,
 		}),
-		commonjs(),
+		commonjs(), // "PNG" is not exported by "node_modules/pngjs/lib/png.js"
 		nodePolyfills(),
 		esbuild({
 			tsconfig: 'tsconfig.rollup.json',
