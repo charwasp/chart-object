@@ -5,6 +5,8 @@ on:
 
 jobs:
   publish:
+    permissions:
+      id-token: write # needed for provenance
     runs-on: ubuntu-latest
     steps:
       - name: Check out
