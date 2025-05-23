@@ -43,11 +43,10 @@ jobs:
         name: Download package
         with:
           pattern: package
-          path: package.tgz
           merge-multiple: true
 
       - name: Extract package
-        run: tar -xzvf package.tgz
+        run: tar -xzvf *.tgz
 
       - name: Push package
         uses: crazy-max/ghaction-github-pages@v4
