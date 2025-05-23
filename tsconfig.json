@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"module": "NodeNext",
+		"target": "ESNext",
+		"esModuleInterop": true,
+		"moduleResolution": "NodeNext",
+		"outDir": "./dist",
+		"sourceMap": true,
+		"declaration": true
+	},
+	"exclude": [
+		"test",
+		"dist",
+		"test-dist"
+	]
+}

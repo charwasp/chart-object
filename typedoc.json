@@ -1,0 +1,10 @@
+{
+	"entryPoints": ["src/index.ts"],
+	"out": "doc",
+	"projectDocuments": ["documents/*.md"],
+	"highlightLanguages": ["bash", "c", "typescript"],
+	"hostedBaseUrl": "https://charwasp.github.io/doc/chart-object/",
+	"navigationLinks": {
+		"GitHub": "https://github.com/charwasp/chart-object"
+	}
+}

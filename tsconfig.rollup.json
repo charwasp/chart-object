@@ -1,0 +1,7 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"sourceMap": false, // https://stackoverflow.com/a/63235210
+		"declaration": false
+	}
+}
