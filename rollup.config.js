@@ -22,7 +22,7 @@ const cjs = {
 const iife = {
 	input: 'src/index.ts',
 	output: {
-		file: 'dist/index.iife.cjs',
+		file: 'dist/index.iife.js',
 		format: 'iife',
 		sourcemap: true,
 		sourcemapExcludeSources: true,
@@ -48,7 +48,7 @@ const iife = {
 const iifeMin = {
 	input: 'src/index.ts',
 	output: {
-		file: 'dist/index.iife.min.cjs',
+		file: 'dist/index.iife.min.js',
 		format: 'iife',
 		sourcemap: true,
 		sourcemapExcludeSources: true,

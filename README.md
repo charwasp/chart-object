@@ -24,6 +24,8 @@ const { Chart } = require('@charwasp/chart-object');
 const chart = new Chart(0, 2, 1);
 ```
 
+## Use in browsers
+
 If you want to load the library in a webpage, you can use the self-contained IIFE version
 
 ```html
@@ -36,6 +38,15 @@ After loading this script, the library will be exposed as a global variable `Cha
 
 ```javascript
 const chart = new CharWasP.Chart(0, 2, 1);
+```
+
+You can also use the files in the
+[`dist` directory](https://github.com/charwasp/chart-object/tree/package/dist) of the
+`package` branch on GitHub to get the library built from the latest commit in the `master` branch.
+Some CDN sources allow you to load files from GitHub, such as jsDelivr:
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/charwasp/chart-object@package/dist/index.iife.min.js"></script>
 ```
 
 ## Documentation

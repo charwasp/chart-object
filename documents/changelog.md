@@ -8,7 +8,7 @@ title: Changelog
 
 ### Features
 
-- Added `dist/index.iife.cjs` and `dist/index.iife.min.cjs` intended for use in browsers.
+- Added `dist/index.iife.js` and `dist/index.iife.min.js` intended for use in browsers.
   One can simply add a `<script>` tag to load the library without any hassle.
 - New class `AudioProvider` as a superclass for `MusicProvider` and `PreviewProvider`.
 
