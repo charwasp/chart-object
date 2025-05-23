@@ -20,14 +20,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Build and pack
+        id: build
+        run: |
+          npm run build
+          package=$(npm pack)
+          echo "package=$package" >> $GITHUB_OUTPUT
 
-      - name: Upload dist
+      - name: Upload package
         uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist
+          name: package
+          path: ${{ steps.build.outputs.package }}
 
   push:
     runs-on: ubuntu-latest
@@ -36,16 +40,19 @@ jobs:
     needs: build
     steps:
       - uses: actions/download-artifact@v4
-        name: Download dist
+        name: Download package
         with:
-          pattern: dist
-          path: dist
+          pattern: package
+          path: package.tgz
           merge-multiple: true
 
-      - name: Push dist
+      - name: Extract package
+        run: tar -xzvf package.tgz
+
+      - name: Push package
         uses: crazy-max/ghaction-github-pages@v4
         with:
-          target_branch: dist
-          build_dir: dist
+          target_branch: package
+          build_dir: package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
