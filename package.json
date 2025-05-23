@@ -40,7 +40,7 @@
 		"@rollup/plugin-commonjs": "^28.0.3",
 		"@rollup/plugin-node-resolve": "^16.0.1",
 		"@types/pngjs": "^6.0.5",
-		"node-web-audio-api": "^1.0.4",
+		"audio-buffer": "^5.0.0",
 		"rollup-plugin-esbuild": "^6.2.1",
 		"rollup-plugin-polyfill-node": "^0.13.0",
 		"typedoc": "^0.28.4",

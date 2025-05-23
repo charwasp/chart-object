@@ -1,9 +1,11 @@
 import { Fraction } from 'fraction.js';
-import { OfflineAudioContext } from 'node-web-audio-api';
+import AudioBuffer from 'audio-buffer';
 
 import { Chart, Tap, Hold, Drag, MusicFromFileProvider, FileEmbedded, PreviewFromMusicProvider, CoverEmptyProvider, Music } from '../src/index.js';
 import type { Cbt } from '../src/cbt.js';
 import { test, expect } from './helper.js';
+
+globalThis.AudioBuffer = AudioBuffer as any;
 
 test('BpsList bpsAt', () => {
 	const bpsList = new Chart(0, 2, 1).bpsList;
@@ -227,7 +229,6 @@ previewProvider.length = 50;
 previewProvider.fadeInLength = 10;
 previewProvider.fadeOutLength = 10;
 const coverProvider = new CoverEmptyProvider();
-const audioContext = new OfflineAudioContext(1, 44100, 44100);
 
 test('Music encode, decode', () => {
 	const music = new Music(musicProvider, previewProvider, coverProvider);
@@ -259,7 +260,7 @@ test('Music encode, decode', () => {
 
 await test('Music audioBuffer', async () => {
 	const music = new Music(musicProvider, previewProvider, coverProvider);
-	const audioBuffer = await music.musicProvider.audioBuffer(audioContext);
+	const audioBuffer = await music.musicProvider.audioBuffer();
 	expect(audioBuffer.sampleRate).toBe(44100);
 	expect(audioBuffer.length).toBe(4410);
 	expect(audioBuffer.numberOfChannels).toBe(1);
@@ -271,7 +272,7 @@ await test('Music audioBuffer', async () => {
 
 await test('Preview from music segment', async () => {
 	const music = new Music(musicProvider, previewProvider, coverProvider);
-	const audioBuffer = await music.previewProvider.audioBuffer(audioContext);
+	const audioBuffer = await music.previewProvider.audioBuffer();
 	expect(audioBuffer.length).toBe(previewProvider.length);
 	const channelData = audioBuffer.getChannelData(0);
 	expect(channelData[4]).toBeApproximately(Math.sin(4/44100 * Math.PI*2 * 440) / 2, 5e-2);
