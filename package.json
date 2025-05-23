@@ -1,6 +1,6 @@
 {
 	"name": "@charwasp/chart-object",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "Library to manipulate CWP charts, to encode them to files and decode them from files, and to convert them to CBT format",
 	"author": {
 		"name": "Ulysses Zhan",
@@ -16,7 +16,6 @@
 		"url": "https://github.com/charwasp/chart-object/issues"
 	},
 	"homepage": "https://github.com/charwasp/chart-object#readme",
-
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"type": "module",
@@ -29,7 +28,6 @@
 		"import": "./dist/index.js",
 		"require": "./dist/index.cjs"
 	},
-
 	"scripts": {
 		"build": "tsc && rollup -c",
 		"test": "tsc -p tsconfig.test.json && node --enable-source-maps test-dist/test/index.js",
@@ -38,17 +36,15 @@
 	"publishConfig": {
 		"access": "public"
 	},
-
 	"devDependencies": {
-		"@rollup/plugin-typescript": "^12.1.2",
+		"@rollup/plugin-commonjs": "^28.0.3",
+		"@rollup/plugin-node-resolve": "^16.0.1",
 		"@types/pngjs": "^6.0.5",
 		"node-web-audio-api": "^1.0.4",
-		"tslib": "^2.8.1",
+		"rollup-plugin-esbuild": "^6.2.1",
+		"rollup-plugin-polyfill-node": "^0.13.0",
 		"typedoc": "^0.28.4",
 		"typescript": "^5.8.3"
-	},
-	"devDependenciesComments": {
-		"tslib": "@rollup/plugin-typescript needs it."
 	},
 	"peerDependencies": {
 		"@petamoriken/float16": "^3.9.2",

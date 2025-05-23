@@ -6,5 +6,9 @@
 	"hostedBaseUrl": "https://charwasp.github.io/doc/chart-object/",
 	"navigationLinks": {
 		"GitHub": "https://github.com/charwasp/chart-object"
-	}
+	},
+	"favicon": "https://charwasp.github.io/favicon.svg",
+	"sourceLinkExternal": true,
+	"markdownLinkExternal": true,
+	"includeVersion": true
 }

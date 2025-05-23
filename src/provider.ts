@@ -37,6 +37,14 @@ class EmbedRequest {
 	}
 }
 
+/**
+ * A provider is an object that provides necessary data for presenting a music,
+ * such as the music itself ({@link MusicProvider}),
+ * the preview ({@link PreviewProvider}), the cover image ({@link CoverProvider}),
+ * and the chart ({@link ChartProvider}).
+ * It can be encoded to a binary format (through the method {@link encode}),
+ * which is a description of the provenance of the data enough to reconstruct the actual data.
+ */
 abstract class Provider {
 	abstract encodedLength(): number;
 
@@ -132,6 +140,17 @@ abstract class ChartProvider extends Provider {
 	}
 }
 
+/**
+ * A file provider is an object that has the following two features:
+ * 
+ * - It can provide binary data (through the method {@link arrayBuffer}).
+ * - It can be encoded to a binary format (through the method {@link encode}),
+ *   which is a description of the provenance of the data.
+ * 
+ * The data provided by {@link arrayBuffer} is not necessarily the same as the data encoded by {@link encode}.
+ * The latter only need to describe a provenance of the data, enough to reconstruct the actual data.
+ * For example, a URL or a file path can suffice.
+ */
 abstract class FileProvider {
 	compressed = false;
 
@@ -160,6 +179,14 @@ abstract class FileProvider {
 		return this.encodedLength();
 	}
 
+	/**
+	 * Encodes the file provider to a binary format.
+	 * 
+	 * @param output The output buffer to write to.
+	 * @param offset The offset in the output buffer to start writing at.
+	 * @returns A tuple containing the new offset and an array of {@link EmbedRequest} objects.
+	 * For the use of the latter, see {@link Provider.encode}.
+	 */
 	abstract encode(output: DataView, offset: number): [number, EmbedRequest[]];
 
 	static decode(input: DataView, offset: number): FileProvider {
@@ -240,10 +267,33 @@ class PreviewFromFileProvider extends PreviewProvider {
 	}
 }
 
+/**
+ * The preview is derived from a segment of the original music data.
+ */
 class PreviewFromMusicProvider extends PreviewProvider {
+
+	/**
+	 * The offset in the original music data to start copying from.
+	 * Measured in audio frames.
+	 */
 	offset = 0;
+
+	/**
+	 * The length of the preview.
+	 * Measured in audio frames.
+	 */
 	length = 441000;
+
+	/**
+	 * The length of the linear fade-in effect. Set to zero to disable fade-in.
+	 * Measured in audio frames.
+	 */
 	fadeInLength = 44100;
+
+	/**
+	 * The length of the linear fade-out effect. Set to zero to disable fade-out.
+	 * Measured in audio frames.
+	 */
 	fadeOutLength = 44100;
 
 	constructor(public musicProvider: MusicProvider) {
@@ -298,6 +348,9 @@ class PreviewFromMusicProvider extends PreviewProvider {
 	}
 }
 
+/**
+ * Its {@link imageData} always returns a 1x1 transparent image.
+ */
 class CoverEmptyProvider extends CoverProvider {
 	async imageData(context?: CanvasRenderingContext2D): Promise<ImageData> {
 		return context?.createImageData(1, 1) ?? new ImageData(1, 1);
@@ -314,6 +367,10 @@ class CoverEmptyProvider extends CoverProvider {
 	}
 }
 
+/**
+ * This class provides a cover image from a PNG file provided by {@link fileProvider}.
+ * It uses the [pngjs](https://www.npmjs.com/package/pngjs) library to decode the PNG file.
+ */
 class CoverFromFileProvider extends CoverProvider {
 	constructor(public fileProvider: FileProvider) {
 		super();
