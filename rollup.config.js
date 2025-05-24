@@ -2,6 +2,7 @@ import esbuild from 'rollup-plugin-esbuild';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
+import inject from '@rollup/plugin-inject';
 
 const cjs = {
 	input: 'src/index.ts',
@@ -26,9 +27,8 @@ const iife = {
 		format: 'iife',
 		sourcemap: true,
 		sourcemapExcludeSources: true,
-		name: 'CharWasP_chartObject',
-		banner: 'globalThis.CharWasP ??= {};',
-		footer: 'Object.assign(CharWasP, CharWasP_chartObject);',
+		name: 'CharWasP',
+		extend: true,
 		inlineDynamicImports: true, // https://stackoverflow.com/a/68956884
 	},
 	plugins: [
@@ -37,11 +37,14 @@ const iife = {
 			preferBuiltins: false,
 		}),
 		commonjs(), // "PNG" is not exported by "node_modules/pngjs/lib/png.js"
-		nodePolyfills(),
 		esbuild({
 			tsconfig: 'tsconfig.rollup.json',
 			minify: false,
 		}),
+		inject({ // inject cannot parse TypeScript, so it must be after esbuild
+			Buffer: ['buffer', 'Buffer'], // pngjs uses Buffer global variable
+		}),
+		nodePolyfills(), // must come after inject to handle buffer module
 	],
 };
 
@@ -52,9 +55,8 @@ const iifeMin = {
 		format: 'iife',
 		sourcemap: true,
 		sourcemapExcludeSources: true,
-		name: 'CharWasP_chartObject',
-		banner: 'globalThis.CharWasP ??= {};',
-		footer: 'Object.assign(CharWasP, CharWasP_chartObject);',
+		name: 'CharWasP',
+		extend: true,
 		inlineDynamicImports: true,
 	},
 	plugins: [
@@ -63,9 +65,15 @@ const iifeMin = {
 			preferBuiltins: false,
 		}),
 		commonjs(),
-		nodePolyfills(),
 		esbuild({
 			tsconfig: 'tsconfig.rollup.json',
+			minify: false,
+		}),
+		inject({
+			Buffer: ['buffer', 'Buffer'],
+		}),
+		nodePolyfills(),
+		esbuild({
 			minify: true,
 		}),
 	],

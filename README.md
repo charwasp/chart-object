@@ -73,6 +73,10 @@ To run tests, run
 npm test
 ```
 
+There are also some tests that you can run in a browser.
+First build the JavaScript with `npm run build`, and then
+use your favorite web server to host the repo, and then access `/test/index.html`.
+
 To build the documentation, run
 
 ```bash

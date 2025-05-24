@@ -11,11 +11,7 @@ async function test(name: string, fn: () => void | Promise<void>): Promise<void>
 }
 
 class Assertion {
-	static count = 0;
-	static successCount = 0;
-
-	constructor(private value: any) {
-	}
+	constructor(private value: any) {}
 
 	toBe(expected: any) {
 		if (this.value !== expected) {

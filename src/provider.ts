@@ -386,7 +386,7 @@ class CoverFromFileProvider extends CoverProvider {
 	async imageData(context?: CanvasRenderingContext2D): Promise<ImageData> {
 		const buffer = await this.fileProvider.arrayBuffer();
 		const png: PNG = await new Promise((resolve, reject) => new PNG().parse(
-			Buffer.from(buffer), // may not work in browser, need browserify
+			Buffer.from(buffer), // Buffer will be polyfilled; see rollup.config.js
 			(error, data) => error ? reject(error) : resolve(data)
 		));
 		const result = context?.createImageData(png.width, png.height) ?? new ImageData(png.width, png.height);
